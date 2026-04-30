@@ -7,7 +7,6 @@
 
 <style>
 :root {
-    --pink: #ff7eb3;
     --red: #ff3e3e;
     --green: #28a745;
 }
@@ -24,26 +23,22 @@ body {
     text-align: center;
 }
 
-h1 {
-    font-size: 2.2rem;
-}
+h1 { font-size: 2rem; }
 
-.highlight {
-    color: var(--red);
-}
+.highlight { color: var(--red); }
 
 .button-group {
-    margin-top: 30px;
+    margin-top: 25px;
     display: flex;
-    gap: 20px;
+    gap: 15px;
     justify-content: center;
 }
 
 .btn {
-    padding: 14px 30px;
-    font-size: 1.1rem;
+    padding: 12px 26px;
+    font-size: 1rem;
     border: none;
-    border-radius: 50px;
+    border-radius: 40px;
     cursor: pointer;
 }
 
@@ -102,9 +97,7 @@ const ctx = canvas.getContext("2d");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-let isMoved = false;
-
-// RUNAWAY BUTTON
+// RUNAWAY BUTTON (mobile + desktop)
 function moveButton() {
     const x = Math.random() * (window.innerWidth - btnNo.offsetWidth);
     const y = Math.random() * (window.innerHeight - btnNo.offsetHeight);
@@ -114,7 +107,12 @@ function moveButton() {
     btnNo.style.top = y + "px";
 }
 
-btnNo.addEventListener("mouseover", moveButton);
+btnNo.addEventListener("mouseenter", moveButton);
+btnNo.addEventListener("touchstart", (e) => {
+    e.preventDefault();
+    moveButton();
+});
+
 btnNo.addEventListener("click", (e) => {
     e.preventDefault();
     moveButton();
@@ -129,15 +127,15 @@ btnYes.addEventListener("click", () => {
     startFireworks();
 });
 
-// FIREWORKS
+// FIREWORKS (optimized)
 let particles = [];
 
 class Particle {
     constructor(x, y) {
         this.x = x;
         this.y = y;
-        this.dx = (Math.random() - 0.5) * 6;
-        this.dy = (Math.random() - 0.5) * 6;
+        this.dx = (Math.random() - 0.5) * 5;
+        this.dy = (Math.random() - 0.5) * 5;
         this.alpha = 1;
     }
 
@@ -156,15 +154,14 @@ class Particle {
 }
 
 function explode(x, y) {
-    for (let i = 0; i < 40; i++) {
+    for (let i = 0; i < 30; i++) {
         particles.push(new Particle(x, y));
     }
 }
 
 function animate() {
     requestAnimationFrame(animate);
-    ctx.fillStyle = "rgba(255,255,255,0.1)";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     particles.forEach((p, i) => {
         if (p.alpha <= 0) particles.splice(i, 1);
@@ -178,11 +175,16 @@ function animate() {
 function startFireworks() {
     animate();
 
-    setInterval(() => {
+    let count = 0;
+
+    const interval = setInterval(() => {
         explode(
             Math.random() * canvas.width,
             Math.random() * canvas.height / 2
         );
+        count++;
+
+        if (count > 20) clearInterval(interval);
     }, 400);
 }
 </script>
