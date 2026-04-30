@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Birthday 🎂</title>
+
+<style>
+:root {
+    --pink: #ff7eb3;
+    --red: #ff3e3e;
+    --green: #28a745;
+}
+
+body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg,#fdfbfb,#ebedee);
+    font-family: sans-serif;
+    overflow: hidden;
+    text-align: center;
+}
+
+h1 {
+    font-size: 2.2rem;
+}
+
+.highlight {
+    color: var(--red);
+}
+
+.button-group {
+    margin-top: 30px;
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+}
+
+.btn {
+    padding: 14px 30px;
+    font-size: 1.1rem;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+}
+
+#btn-chomuuu {
+    background: var(--green);
+    color: white;
+}
+
+#btn-nenu {
+    background: var(--red);
+    color: white;
+    position: relative;
+}
+
+#confirmation {
+    display: none;
+}
+
+canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+</style>
+</head>
+
+<body>
+
+<h1 id="main-text">
+    Happy Birthday 🎂 <br>
+    <span class="highlight">Special One 💖</span>
+</h1>
+
+<div class="button-group">
+    <button id="btn-chomuuu" class="btn">Chomuuu 💖</button>
+    <button id="btn-nenu" class="btn">Nenu 😜</button>
+</div>
+
+<div id="confirmation">
+    <h1>Yayyy 🎉</h1>
+    <h2>Tu meri favorite notification hai 💖</h2>
+    <p>Ab cake treat bhi dena padega 😏🎂</p>
+</div>
+
+<canvas id="canvas"></canvas>
+
+<script>
+const btnYes = document.getElementById("btn-chomuuu");
+const btnNo = document.getElementById("btn-nenu");
+const mainText = document.getElementById("main-text");
+const confirmation = document.getElementById("confirmation");
+
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let isMoved = false;
+
+// RUNAWAY BUTTON
+function moveButton() {
+    const x = Math.random() * (window.innerWidth - btnNo.offsetWidth);
+    const y = Math.random() * (window.innerHeight - btnNo.offsetHeight);
+
+    btnNo.style.position = "fixed";
+    btnNo.style.left = x + "px";
+    btnNo.style.top = y + "px";
+}
+
+btnNo.addEventListener("mouseover", moveButton);
+btnNo.addEventListener("click", (e) => {
+    e.preventDefault();
+    moveButton();
+});
+
+// SUCCESS CLICK
+btnYes.addEventListener("click", () => {
+    mainText.style.display = "none";
+    btnYes.style.display = "none";
+    btnNo.style.display = "none";
+    confirmation.style.display = "block";
+    startFireworks();
+});
+
+// FIREWORKS
+let particles = [];
+
+class Particle {
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.dx = (Math.random() - 0.5) * 6;
+        this.dy = (Math.random() - 0.5) * 6;
+        this.alpha = 1;
+    }
+
+    update() {
+        this.x += this.dx;
+        this.y += this.dy;
+        this.alpha -= 0.02;
+    }
+
+    draw() {
+        ctx.globalAlpha = this.alpha;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
+        ctx.fill();
+    }
+}
+
+function explode(x, y) {
+    for (let i = 0; i < 40; i++) {
+        particles.push(new Particle(x, y));
+    }
+}
+
+function animate() {
+    requestAnimationFrame(animate);
+    ctx.fillStyle = "rgba(255,255,255,0.1)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    particles.forEach((p, i) => {
+        if (p.alpha <= 0) particles.splice(i, 1);
+        else {
+            p.update();
+            p.draw();
+        }
+    });
+}
+
+function startFireworks() {
+    animate();
+
+    setInterval(() => {
+        explode(
+            Math.random() * canvas.width,
+            Math.random() * canvas.height / 2
+        );
+    }, 400);
+}
+</script>
+
+</body>
+</html>
