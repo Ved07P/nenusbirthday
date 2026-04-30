@@ -1,192 +1,361 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Happy Birthday 🎂</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Happy Birthday!</title>
+    <style>
+        /* --- CSS VARIABLES & RESET --- */
+        :root {
+            --primary-pink: #ff7eb3;
+            --deep-red: #ff3e3e;
+            --success-green: #28a745;
+            --chomuuu-blue: #007bff;
+            --bg-gradient: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            --font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            --btn-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }  
 
-<style>
-:root {
-    --red: #ff3e3e;
-    --green: #28a745;
-}
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-body {
-    margin: 0;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: linear-gradient(135deg,#fdfbfb,#ebedee);
-    font-family: sans-serif;
-    overflow: hidden;
-    text-align: center;
-}
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: var(--bg-gradient);
+            font-family: var(--font-family);
+            overflow: hidden; /* Critical for the running button */
+            user-select: none;
+        }
 
-h1 { font-size: 2rem; }
+        /* --- TYPOGRAPHY --- */
+        h1 {
+            font-size: 2.5rem;
+            color: #333;
+            margin-bottom: 2.5rem;
+            text-align: center;
+            padding: 0 20px;
+            animation: float 3s ease-in-out infinite;
+            z-index: 10;
+        }
 
-.highlight { color: var(--red); }
+        .subtitle {
+            font-size: 1.5rem;
+            color: #666;
+            display: block;
+            margin-top: 10px;
+            font-weight: normal;
+        }
 
-.button-group {
-    margin-top: 25px;
-    display: flex;
-    gap: 15px;
-    justify-content: center;
-}
+        .highlight {
+            color: var(--primary-pink);
+            font-weight: 800;
+        }
 
-.btn {
-    padding: 12px 26px;
-    font-size: 1rem;
-    border: none;
-    border-radius: 40px;
-    cursor: pointer;
-}
+        /* --- BUTTON CONTAINER --- */
+        .button-group {
+            position: relative;
+            display: flex;
+            gap: 20px;
+            z-index: 10;
+        }
 
-#btn-chomuuu {
-    background: var(--green);
-    color: white;
-}
+        /* --- SHARED BUTTON STYLES --- */
+        .btn {
+            padding: 16px 42px;
+            font-size: 1.25rem;
+            font-weight: 700;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: var(--btn-shadow);
+            outline: none;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
 
-#btn-nenu {
-    background: var(--red);
-    color: white;
-    position: relative;
-}
+        .btn:active {
+            transform: scale(0.95);
+        }
 
-#confirmation {
-    display: none;
-}
+        /* --- CHOMUUU BUTTON (Stays Still) --- */
+        #btn-chomuuu {
+            background-color: var(--chomuuu-blue);
+            color: white;
+            position: relative; 
+        }
+        
+        #btn-chomuuu:hover {
+            background-color: #0056b3;
+            transform: scale(1.1);
+        }
 
-canvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-}
-</style>
+        /* --- NENU BUTTON (Runs Away) --- */
+        #btn-nenu {
+            background-color: var(--deep-red);
+            color: white;
+            transition: top 0.3s ease, left 0.3s ease, transform 0.1s;
+        }
+
+        /* --- SUCCESS STATE --- */
+        #confirmation {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 20;
+            width: 100%;
+            padding: 20px;
+        }
+
+        #confirmation h2 {
+            font-size: 3.5rem;
+            color: var(--success-green);
+            margin: 0;
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        #confirmation p {
+            font-size: 1.5rem;
+            color: #444;
+            margin-top: 15px;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        /* --- FIREWORKS CANVAS --- */
+        #canvas-fireworks {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        /* --- ANIMATIONS --- */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 600px) {
+            h1 { font-size: 2rem; }
+            .subtitle { font-size: 1.2rem; }
+            .btn { padding: 12px 30px; font-size: 1rem; }
+            #confirmation h2 { font-size: 2.5rem; }
+            #confirmation p { font-size: 1.2rem; }
+        }
+    </style>
 </head>
-
 <body>
 
-<h1 id="main-text">
-    Happy Birthday 🎂 <br>
-    <span class="highlight">Special One 💖</span>
-</h1>
+<h1 id="main-text">Happy Birthday! 🎂🎉<br>
+    <span class="subtitle">Tu kon he ? Dekh kya rahi he button daba na he ya nahi ???👀</span>
+</h1>>
 
 <div class="button-group">
-    <button id="btn-chomuuu" class="btn">Chomuuu 💖</button>
-    <button id="btn-nenu" class="btn">Nenu 😜</button>
+    <button id="btn-chomuuu" class="btn">Chomuuu</button>
+    <button id="btn-nenu" class="btn">Nenu</button>
 </div>
 
 <div id="confirmation">
-    <h1>Yayyy 🎉</h1>
-    <h2>Tu meri favorite notification hai 💖</h2>
-    <p>Ab cake treat bhi dena padega 😏🎂</p>
+    <h2>Sahi Jawab! 😂🏆</h2>
+    <p>Maan liya na ki tu hi asli Chomuuu hai! 🤪<br>Jokes apart, wishing you the happiest birthday! May all your dreams come true. Have a blast! 🥳💖 <br> Ab Cake Treat Dene ka kya socha 😒😒😒</p>
 </div>
 
-<canvas id="canvas"></canvas>
+<canvas id="canvas-fireworks"></canvas>
 
 <script>
-const btnYes = document.getElementById("btn-chomuuu");
-const btnNo = document.getElementById("btn-nenu");
-const mainText = document.getElementById("main-text");
-const confirmation = document.getElementById("confirmation");
+    const btnChomuuu = document.getElementById('btn-chomuuu');
+    const btnNenu = document.getElementById('btn-nenu');
+    const mainText = document.getElementById('main-text');
+    const confirmation = document.getElementById('confirmation');
+    const canvas = document.getElementById('canvas-fireworks');
+    const ctx = canvas.getContext('2d');
 
-const canvas = document.getElementById("canvas");
-const ctx = canvas.getContext("2d");
+    let isNenuBtnAbsolute = false;
 
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+    // --- THE "RUNAWAY" LOGIC ---
+    function moveButton() {
+        const padding = 20; 
+        const viewportWidth = window.innerWidth - padding;
+        const viewportHeight = window.innerHeight - padding;
+        
+        const btnRect = btnNenu.getBoundingClientRect();
+        const btnWidth = btnRect.width;
+        const btnHeight = btnRect.height;
 
-// RUNAWAY BUTTON (mobile + desktop)
-function moveButton() {
-    const x = Math.random() * (window.innerWidth - btnNo.offsetWidth);
-    const y = Math.random() * (window.innerHeight - btnNo.offsetHeight);
+        const chomuuuRect = btnChomuuu.getBoundingClientRect();
+        const safeBuffer = 50; 
+        const forbiddenZone = {
+            left: chomuuuRect.left - safeBuffer,
+            right: chomuuuRect.right + safeBuffer,
+            top: chomuuuRect.top - safeBuffer,
+            bottom: chomuuuRect.bottom + safeBuffer
+        };
 
-    btnNo.style.position = "fixed";
-    btnNo.style.left = x + "px";
-    btnNo.style.top = y + "px";
-}
+        let newX, newY;
+        let isOverlapping = true;
+        let attempts = 0;
 
-btnNo.addEventListener("mouseenter", moveButton);
-btnNo.addEventListener("touchstart", (e) => {
-    e.preventDefault();
-    moveButton();
-});
+        while (isOverlapping && attempts < 50) {
+            newX = Math.random() * (viewportWidth - btnWidth);
+            newY = Math.random() * (viewportHeight - btnHeight);
+            
+            newX = Math.max(padding, newX);
+            newY = Math.max(padding, newY);
 
-btnNo.addEventListener("click", (e) => {
-    e.preventDefault();
-    moveButton();
-});
+            const inX = newX + btnWidth > forbiddenZone.left && newX < forbiddenZone.right;
+            const inY = newY + btnHeight > forbiddenZone.top && newY < forbiddenZone.bottom;
 
-// SUCCESS CLICK
-btnYes.addEventListener("click", () => {
-    mainText.style.display = "none";
-    btnYes.style.display = "none";
-    btnNo.style.display = "none";
-    confirmation.style.display = "block";
-    startFireworks();
-});
-
-// FIREWORKS (optimized)
-let particles = [];
-
-class Particle {
-    constructor(x, y) {
-        this.x = x;
-        this.y = y;
-        this.dx = (Math.random() - 0.5) * 5;
-        this.dy = (Math.random() - 0.5) * 5;
-        this.alpha = 1;
-    }
-
-    update() {
-        this.x += this.dx;
-        this.y += this.dy;
-        this.alpha -= 0.02;
-    }
-
-    draw() {
-        ctx.globalAlpha = this.alpha;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
-        ctx.fill();
-    }
-}
-
-function explode(x, y) {
-    for (let i = 0; i < 30; i++) {
-        particles.push(new Particle(x, y));
-    }
-}
-
-function animate() {
-    requestAnimationFrame(animate);
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    particles.forEach((p, i) => {
-        if (p.alpha <= 0) particles.splice(i, 1);
-        else {
-            p.update();
-            p.draw();
+            if (inX && inY) {
+                isOverlapping = true; 
+            } else {
+                isOverlapping = false; 
+            }
+            attempts++;
         }
+
+        if (!isNenuBtnAbsolute) {
+            btnNenu.style.position = 'fixed'; 
+            isNenuBtnAbsolute = true;
+        }
+        
+        btnNenu.style.left = `${newX}px`;
+        btnNenu.style.top = `${newY}px`;
+    }
+
+    // --- EVENT LISTENERS FOR "NENU" BUTTON (RUNAWAY) ---
+    btnNenu.addEventListener('mouseover', moveButton);
+    
+    btnNenu.addEventListener('touchstart', (e) => {
+        e.preventDefault(); 
+        moveButton();
     });
-}
 
-function startFireworks() {
-    animate();
+    btnNenu.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        moveButton(); 
+    });
 
-    let count = 0;
+    btnNenu.addEventListener('focus', moveButton);
 
-    const interval = setInterval(() => {
-        explode(
-            Math.random() * canvas.width,
-            Math.random() * canvas.height / 2
-        );
-        count++;
 
-        if (count > 20) clearInterval(interval);
-    }, 400);
-}
+    // --- SUCCESS LOGIC ON "CHOMUUU" BUTTON ---
+    btnChomuuu.addEventListener('click', () => {
+        // Hide UI
+        mainText.style.display = 'none';
+        btnChomuuu.style.display = 'none';
+        btnNenu.style.display = 'none';
+
+        // Show Confirmation Message
+        confirmation.style.display = 'block';
+
+        // Start Fireworks
+        startFireworks();
+    });
+
+
+    // --- FIREWORKS ENGINE ---
+    let particles = [];
+    
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    class Particle {
+        constructor(x, y, color) {
+            this.x = x;
+            this.y = y;
+            this.color = color;
+            const angle = Math.random() * Math.PI * 2;
+            const velocity = Math.random() * 4 + 1;
+            this.dx = Math.cos(angle) * velocity;
+            this.dy = Math.sin(angle) * velocity;
+            this.alpha = 1;
+            this.decay = Math.random() * 0.015 + 0.01;
+            this.gravity = 0.05;
+        }
+
+        draw() {
+            ctx.save();
+            ctx.globalAlpha = this.alpha;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, 4, 0, Math.PI * 2, false);
+            ctx.fillStyle = this.color;
+            ctx.fill();
+            ctx.restore();
+        }
+
+        update() {
+            this.x += this.dx;
+            this.y += this.dy;
+            this.dy += this.gravity;
+            this.alpha -= this.decay;
+        }
+    }
+
+    function animateFireworks() {
+        requestAnimationFrame(animateFireworks);
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.1)'; 
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        particles.forEach((particle, index) => {
+            if (particle.alpha > 0) {
+                particle.update();
+                particle.draw();
+            } else {
+                particles.splice(index, 1);
+            }
+        });
+    }
+
+    function explode(x, y) {
+        const colors = ['#ff4d4d', '#ff9f43', '#feca57', '#28a745', '#54a0ff', '#9b59b6'];
+        for (let i = 0; i < 40; i++) {
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            particles.push(new Particle(x, y, color));
+        }
+    }
+
+    function startFireworks() {
+        animateFireworks();
+        
+        // Initial Burst
+        explode(window.innerWidth / 2, window.innerHeight / 2);
+
+        // Random bursts loop
+        let count = 0;
+        const interval = setInterval(() => {
+            const x = Math.random() * canvas.width;
+            const y = Math.random() * (canvas.height * 0.7); 
+            explode(x, y);
+            count++;
+            if (count > 20) clearInterval(interval);
+        }, 400);
+    }
 </script>
 
 </body>
